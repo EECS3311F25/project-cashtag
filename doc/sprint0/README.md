@@ -48,6 +48,8 @@ Once a feature or fix is complete:
 | `feature`   | `feature/E3TXS-19-add-login` | New features or stories     | `develop`              |
 | `fix`       | `fix/E3TXS-19-resolve-login-error`     | Bug fixes                   | `develop`              |
 
+- Feature (and fix) branches are named using the Jira ticket number, following the format: `feature/<Jira-ticket-ID>-<short-description>`.
+  
 ### Contribution Process:
 
 1. Check your assigned Jira ticket.
