@@ -26,6 +26,11 @@ The goal is to make money management clear and fair. With simple charts and goal
 3. Run the development server: `npm run dev`
 4. The frontend should now be running on: http://localhost:3000
 
+### Database Setup (Supabase):
+- The project uses Supabase as its database.
+- The backend code is already integrated with Supabase using environment variables defined in `application.properties`.
+- No additional setup is required to connect to the database.
+
 ## Contribution
 
 ### Task Management:
