@@ -114,7 +114,7 @@ Acceptance Criteria:
 
 As a user, I want to view my profile and see all the badges and achievements that I’ve earned, so that I can stay motivated and feel rewarded for keeping up with my budgeting goals.
 
-Criteria Of Satisfaction:
+Acceptance Criteria:
 - The profile page should display a list of badges (e.g., “3-Day Streak”, “Stayed Under Monthly Dining Budget”).
 - Each badge should have a visual icon and/or title.
 - Badges should update automatically when new achievements are unlocked.
@@ -123,7 +123,7 @@ Criteria Of Satisfaction:
 
 As Stacie (a roommate who shares expenses), I want to receive an alert notification when I’m close to exceeding any of my monthly budgets (ex: shopping, entertainment, groceries), so that I can adjust my spending before going over my limit.
 
-Criteria Of Satisfaction:
+Acceptance Criteria:
 - The system must send an alert when a user reaches 80–90% of their budget limit.
 - Alerts should appear on a dashboard.
 - The notification should include how much remains before hitting the limit.
@@ -131,9 +131,9 @@ Criteria Of Satisfaction:
 
 **15. Generate End-of-Month Spending Report**
 
-As the traveller, I want to generate an end-of-month spending report that compares this month to previous months, so that I can  plan my future spending better.
+As Sarah (the traveller), I want to generate an end-of-month spending report that compares this month to previous months, so that I can  plan my future spending better.
 
-Criteria Of Satisfaction:
+Acceptance Criteria:
 - The report should display total spending by category (e.g., food, transportation, social).
 - Users should see insights like “biggest expense category” or “% change from last month.”
 
