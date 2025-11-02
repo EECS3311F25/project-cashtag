@@ -1,56 +1,64 @@
 "use client";
 import { useState } from "react";
 import { supabase } from "../../utils/supabase/client";
+import { useRouter } from "next/navigation"; 
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setMessage("");
     
     try {
-      // Create the user in Supabase
-      const { data, error } = await supabase.auth.signUp({
+      // Log in the user with Supabase
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
-
-      // Save to backend
-      const res = await fetch("http://localhost:8080/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          id: data.user.id,
-          email: email
-        }),
-      });
-
-      if (!res.ok) throw new Error("Failed to save user to backend");
+     if (error) {
+        // Handle specific error cases
+        if (error.message.includes("Invalid login credentials")) {
+          setMessage("Email or password is incorrect. Please try again.");
+        } else if (error.message.includes("Email not confirmed")) {
+          setMessage("Please verify your email address before logging in.");
+        } else {
+          setMessage(`Error: ${error.message}`);
+        }
+        setIsLoading(false);
+        return;
+      }
       
-      const result = await res.json();
-      setMessage(`User created successfully ID: ${result.id}`);
+      setMessage("Login successful! Redirecting...");
       
       // Clear form
       setEmail("");
-      
       setPassword("");
+      
+      setTimeout(() => {
+        router.push("/dashboard"); // Redirect to home page
+      }, 1000);
       
     } catch (err) {
       console.error(err);
-      setMessage(`Error: ${err.message}`);
+      setMessage(`Error: ${error.message}`);
+      setIsLoading(false);
     }
   };
 
   return (
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#edede9' }}> 
     <div className="w-full max-w-xl bg-white rounded-3xl p-6 shadow-md mx-auto mt-10">
       <div className="text-center mb-6">
-        <h1 className="text-4xl font-bold text-[#28799B]">Welcome</h1>
+        <h1 className="text-4xl font-bold text-[#28799B]">Welcome Back</h1>
         <p className="text-gray-500 pt-3">
-          Create an account to get started
+          Log in to your account to get started
         </p>
       </div>
       
@@ -79,7 +87,7 @@ export default function Login() {
           <input
             type="password"
             id="password"
-            placeholder="****"
+            placeholder="********"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border rounded p-2 text-gray-400"
@@ -91,17 +99,18 @@ export default function Login() {
         
         <button
           type="submit"
-          className="w-full py-2 rounded-full font-medium text-white transition"
-          style={{ backgroundColor: '#9BC5DD' }}
+          className="w-full py-2 rounded-full font-medium text-white transition cursor-pointer"
+          style={{ backgroundColor: '#28799B' }}
         >
-          Create Account
+          Sign in
         </button>
       </form>
       
       <p className="text-center text-sm text-gray-500 mt-4">
         Don't have an account?{" "}
-        <a href="/sign-up" className="text-[#28799B] font-bold">Sign up</a>
+        <a href="/sign-up" className="text-[#9BC5DD] font-bold">Sign up</a>
       </p>
+    </div>
     </div>
   );
 }
