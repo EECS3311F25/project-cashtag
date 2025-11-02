@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import AddExpenseModal from "./AddExpenseModal";
+import BarChartComponent from "./BarChartComponent";
 
 export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,7 +13,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const userId = "6899c10f-f3e4-4101-b7fe-c72cbe0e07ba"; 
-    fetch(`http://localhost:8080/api/expense/user/${userId}`)
+    fetch(`http://localhost:8080/api/expense/user/${userId}?all=true`)
       .then((res) => res.json())
       .then((data) => setExpenses(data))
       .catch((err) => console.error("Error fetching expenses:", err));
@@ -30,6 +31,9 @@ export default function Dashboard() {
           + Add Expense
         </button>
       </div>
+
+      {/* Chart updates whenever refresh changes */}
+      <BarChartComponent />
 
       {/*temporary recent expenses section */}
       <div className="bg-white rounded-2xl shadow-md p-6 max-w-4xl mx-auto">
