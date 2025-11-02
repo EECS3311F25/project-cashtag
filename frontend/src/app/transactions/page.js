@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 
 const API = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
-const USER_ID =
-  process.env.NEXT_PUBLIC_USER_ID ||
-  "6899c10f-f3e4-4101-b7fe-c72cbe0e07ba";
+const USER_ID = process.env.NEXT_PUBLIC_USER_ID || "6899c10f-f3e4-4101-b7fe-c72cbe0e07ba";
 
 export default function TransactionsPage() {
   const [rows, setRows] = useState([]);
@@ -28,7 +26,7 @@ export default function TransactionsPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${API}/api/expense/categories`);
+        const res = await fetch(`${API}/api/categories`);
         if (!res.ok) throw new Error("Failed to load categories");
         setCategories(await res.json());
       } catch (e) {
