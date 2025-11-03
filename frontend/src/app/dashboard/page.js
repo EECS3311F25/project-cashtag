@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import AddExpenseModal from "./AddExpenseModal";
+import EditExpenseModal from "./EditExpenseModal";
 import BarChartComponent from "./BarChartComponent";
 
 
@@ -11,6 +12,8 @@ export default function Dashboard() {
  const [expenses, setExpenses] = useState([]);
  const [refresh, setRefresh] = useState(false);
  const [userId, setUserId] = useState(null);
+ const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+ const [selectedExpense, setSelectedExpense] = useState(null);
 
  useEffect(() => {
     const id =
@@ -20,6 +23,7 @@ export default function Dashboard() {
   }, []);
 
  const handleExpenseAdded = () => setRefresh(!refresh);
+ const handleExpenseUpdated = () => setRefresh(!refresh);
 
 
  useEffect(() => {
@@ -30,6 +34,29 @@ export default function Dashboard() {
      .then((data) => setExpenses(data))
      .catch((err) => console.error("Error fetching expenses:", err));
  }, [refresh, userId]);
+
+ const handleDeleteClick = async (expenseId) => {
+    if (!confirm("Are you sure you want to delete this expense?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:8080/api/expense/${expenseId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setRefresh(!refresh);
+      } else {
+        console.error("Failed to delete expense");
+      }
+    } catch (err) {
+      console.error("Error deleting expense:", err);
+    }
+  };
+
+  const handleEditClick = (expense) => {
+    setSelectedExpense(expense);
+    setIsEditModalOpen(true);
+  };
+
 
 
  return (
@@ -63,27 +90,41 @@ export default function Dashboard() {
        ) : (
          <table className="w-full border-collapse text-left">
            <thead>
-             <tr className="border-b text-gray-600">
+             <tr className="border-b text-gray-800">
                <th className="pb-2">Description</th>
                <th className="pb-2">Amount</th>
                <th className="pb-2">Category</th>
                <th className="pb-2">Date</th>
-             </tr>
-           </thead>
-           <tbody>
-             {expenses.map((exp) => (
-               <tr key={exp.id} className="border-b hover:bg-pink-50">
-                 <td className="py-2">{exp.description}</td>
-                 <td className="py-2">${exp.amount.toFixed(2)}</td>
-                 <td className="py-2">{exp.category}</td>
-                 <td className="py-2">{exp.date}</td>
-               </tr>
-             ))}
-           </tbody>
-         </table>
-       )}
-     </div>
-
+            <th className="pb-2 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {expenses.map((exp) => (
+                <tr key={exp.id} className="border-b hover:bg-pink-50">
+                  <td className="py-2">{exp.description}</td>
+                  <td className="py-2">${exp.amount.toFixed(2)}</td>
+                  <td className="py-2">{exp.category}</td>
+                  <td className="py-2">{exp.date}</td>
+                  <td className="py-2 text-right">
+                    <button
+                      onClick={() => handleEditClick(exp)}
+                      className="text-[#9BC5DD] hover:underline mr-3"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(exp.id)}
+                      className="text-[#cb8a90] hover:underline"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
      {/* Modal (pop up) */}
      <AddExpenseModal
@@ -91,6 +132,13 @@ export default function Dashboard() {
        onClose={() => setIsModalOpen(false)}
        onExpenseAdded={handleExpenseAdded}
      />
-   </main>
+
+   <EditExpenseModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        expense={selectedExpense}
+        onExpenseUpdated={handleExpenseUpdated}
+      />
+    </main>
  );
 }

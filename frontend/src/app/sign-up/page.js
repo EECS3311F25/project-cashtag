@@ -2,9 +2,8 @@
 import { useState } from "react";
 import { supabase } from "../../utils/supabase/client";
 
-export default function Login() {
+export default function SignUp() {
   const [email, setEmail] = useState("");
-
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [password, setPassword] = useState("");
@@ -24,9 +23,29 @@ export default function Login() {
           lastname: lastname
         }
       }
- });
+    });
 
-      if (error) throw error;
+
+//supabase error
+    if (error) {
+        console.error("Supabase signup error:", error);
+
+        const lowerMsg = error.message.toLowerCase();
+        if (
+          lowerMsg.includes("already registered") ||
+          lowerMsg.includes("duplicate") ||
+          lowerMsg.includes("exists")
+        ) {
+          setMessage("An account with this email already exists. Please log in instead.");
+        } else {
+          setMessage(`Error: ${error.message}`);
+        }
+        return;
+      }
+
+
+      // Convert Supabase timestamp to Java LocalDateTime format
+      const created_At = new Date(data.user.created_at).toISOString().slice(0, 19);
 
       // Save to backend
       const res = await fetch("http://localhost:8080/api/users", {
@@ -37,22 +56,31 @@ export default function Login() {
             email: email,
           firstname: firstname,
           lastname: lastname,
-          created_at: data.user.created_at
+          created_At
           
         }),
       });
          console.log("Backend response status:", res.status); // Debug log
     
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error("Backend error:", errorText); // Debug log
-      throw new Error(`Failed to save user to backend: ${errorText}`);
-    }
+   
+
+     // Backened error Check if error is about duplicate email
+        if (!res.ok) {
+        const text = await res.text();
+        console.error("Backend error:", text);
+
+        if (res.status === 409 || text.includes("exists") || text.includes("duplicate")) {
+          setMessage("This email is already associated with an account. Please log in instead.");
+        } else {
+          setMessage("There was an issue saving your account. Please try again later.");
+        }
+        return;
+      }
+      
     
     const result = await res.json();
     console.log("Backend saved user:", result); // Debug log
-    
-      setMessage(`User created successfully ID: ${result.id}`);
+    setMessage("Please verify your email");
       
       // Clear form
       setEmail("");
@@ -60,13 +88,15 @@ export default function Login() {
       setLastname("");
       setPassword("");
       
-    } catch (err) {
+    } 
+    catch (err) {
       console.error(err);
       setMessage(`Error: ${err.message}`);
     }
   };
 
   return (
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#edede9' }}> 
     <div className="w-full max-w-xl bg-white rounded-3xl p-6 shadow-md mx-auto mt-10">
       <div className="text-center mb-6">
         <h1 className="text-4xl font-bold text-[#28799B]">Welcome</h1>
@@ -129,7 +159,7 @@ export default function Login() {
           <input
             type="password"
             id="password"
-            placeholder="****"
+            placeholder="**********"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="w-full border rounded p-2 text-gray-400"
@@ -142,7 +172,7 @@ export default function Login() {
         <button
           type="submit"
           className="w-full py-2 rounded-full font-medium text-white transition cursor-pointer"
-          style={{ backgroundColor: '#9BC5DD' }}
+          style={{ backgroundColor: '#28799B' }}
         >
           Create Account
         </button>
@@ -150,8 +180,10 @@ export default function Login() {
       
       <p className="text-center text-sm text-gray-500 mt-4">
         Already have an account?{" "}
-        <a href="/login" className="text-[#28799B] font-bold">Log in</a>
+        <a href="/login" className="text-[#9BC5DD] font-bold">Log in</a>
       </p>
     </div>
+ </div>
   );
 }
+
