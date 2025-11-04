@@ -8,7 +8,7 @@ COMPLETED TASKS
 
 **1. Setup Login**
 
-As a returning user, I want to securely log in to my account so that I can access my saved data and continue tracking my progress.
+As Stacie (an organized roommate who manages shared and personal expenses), I want to securely log in to my account so that I can access my saved data and continue tracking my progress.
 
 Acceptance Criteria:
 - The system must allow login using a valid email and password.
@@ -17,7 +17,7 @@ Acceptance Criteria:
 
 **2. Sign Up**
 
-As a new user, I want to create an account so that I can start using the app.
+As Jordan Nguyen (a tech-savvy university student who wants an easy start to managing his finances), I want to create an account so that I can start using the app.
 
 Acceptance Criteria:
 - The signup form should include fields for email, password, and password confirmation.
@@ -26,7 +26,7 @@ Acceptance Criteria:
 
 **3. Dashboard - add bar graph of expenses**
 
-As a user, I want to see a bar graph of my expenses for each month so that I can easily understand my spending trends and distribution.
+As Jordan Nguyen (a visually oriented university student who prefers visuals to track his spending habits rather than just numbers), I want to see a bar graph of my expenses for each month so that I can easily understand my spending trends and distribution.
 
 Acceptance Criteria:
 - The dashboard displays a bar graph summarizing total expenses per month based on category
@@ -34,8 +34,7 @@ Acceptance Criteria:
 
 **4. View the history of expenses**
 
-As a user, I can navigate to the “Expense History” page from the navigation bar so that I can review all my past transactions in one place.
-
+As Jordan Nguyen (a university student who wants to gain better control of his spending), I can navigate to the “Expense History” page from the navigation bar so that I can review all my past transactions in one place.
 Acceptance Criteria:
 - The navigation bar includes a “History” or “Expenses” option, and clicking it redirects the user to a page listing all past expenses.
 - Each transaction displays date, category, and amount.
@@ -43,7 +42,7 @@ Acceptance Criteria:
 
 **5. Create a new expense and add tag**
 
-As a user, I want to be able to create a new expense and tag it with a category (like “Food,” “Transportation,” or “Entertainment”) so I can easily track and organize my spending.
+As Jordan Nguyen (a university student who wants to better understand and organize his daily spending habits), I want to be able to create a new expense and tag it with a category (like “Food,” “Transportation,” or “Entertainment”) so I can easily track and organize my spending.
 
 Acceptance Criteria:
 - The user can select a category from a predefined list.
@@ -52,7 +51,7 @@ Acceptance Criteria:
 
 **6. Edit/Delete an Expense**
 
-As a user, I want to edit or delete an existing expense so I can fix errors or remove expenses that are no longer relevant.
+As Stacie (an organized roommate who manages shared and personal expenses), I want to edit or delete an existing expense so I can fix errors or remove expenses that are no longer relevant.
 
 Acceptance Criteria
 - The user can open any existing expense and modify its details
@@ -66,8 +65,7 @@ UNIFINISHED TASKS FROM SPRINT1
 
 **1. Add Recurring Monthly Expenses**
 
-As a user, I want to set up recurring monthly expenses (like rent or subscriptions) so I don’t have to manually add them every month.
-
+As Stacie, who manages shared apartment expenses with her roomates, I want to set up recurring monthly expenses such as rent, wifi or subscriptions so that I do not have to manually add them every month. This helps me stay organized and avoid confusion about which bills are paid or still pending.
 Acceptance Criteria
 - The user can mark any expense as recurring monthly
 - The recurring expenses automatically appear in future months.
@@ -77,7 +75,7 @@ SPRINT 2 TASKS
 
 **1. Sign Out**
 
-As a logged-in user, I want to sign out of my account so that my personal information remains secure.
+As Sarah, who travels and accesses her account from different devices and networks, I want to be able to sign out of my account from anywhere so that my data and group expense details stay private even if I am using public devices. 
 
 Acceptance Criteria:
 - A visible “Sign Out” button is available on the main dashboard.
@@ -86,7 +84,7 @@ Acceptance Criteria:
 
 **2. Create Dashboard (current month - default)**
 
-As a user, I want the dashboard to display my current month’s expenses by default so I can quickly see my recent spending and budget progress.
+As Jordan, who wants a quick overview of his spending, I want my dashboard to show the current month’s expenses and budgets by default so I can see how I am doing without filtering or searching manually.
 
 Acceptance Criteria
 - When opening the app, the dashboard automatically shows data for the current month.
@@ -95,7 +93,7 @@ Acceptance Criteria
 
 **3. View Group Expenses**
 
-As a user, I can navigate to the “Group Expenses” page from the navigation bar so that I can easily view all shared expenses for my groups in one place.
+As Stacie, who shares bills and groceries with her roommates, I want to navigate to a “Group Expenses” page where I can view all shared expenses in one place so that I can easily keep track of who paid for what and stay fair among everyone.
 
 Acceptance Criteria:
 - The navigation bar includes a “Group Expenses” option 
@@ -104,7 +102,7 @@ Acceptance Criteria:
 
 **4. Create and Manage Groups**
 
-As a user, I can create a new group and invite members to join using their username once the group is created so that we can collaboratively manage and track our shared expenses.
+As Sarah who travels frequently and shares expenses with friends, I want to create and manage groups. I can invite users to join so that I can organize trip costs and keep all shared expenses with my friends in one place
 
 Acceptance Criteria:
 - The user can click a “Create Group” button and enter a group name.
@@ -113,7 +111,7 @@ Acceptance Criteria:
 
 **5. Piechart with interactive Legend**
 
-As a user, I can click on a category in the pie chart legend to view all expenses belonging to that category so that I can easily see detailed spending for specific areas.
+As Jordan, a visual learner, who prefers seeing where the money is going, I want to click on categories in a pie chart legend to view all my expenses for that category easily.
 
 Acceptance Criteria:
 - The pie chart shows the percentage of total spending by category for the current month.
@@ -122,7 +120,7 @@ Acceptance Criteria:
 
 **6. Add and Split Group Expense**
 
-As a user, I can log a shared expense and automatically split the cost among all group members so that everyone knows how much they owe to the person who added the shared expense.
+As Stacie, who usually pays for group groceries or utilities that are shared, I want to enter a shared expense and have the software automatically split the cost among my roommates so that everyone can see how much they owe to avoid confusion.
 
 Acceptance Criteria:
 - The user can select a group and add a new expense with details.
@@ -132,8 +130,7 @@ Acceptance Criteria:
 
 **7. Dynamic Debt Calculation and Summary**
 
-The system will automatically calculate who owes who within the group and display the results clearly in a message or summary section so that everyone can easily settle balances. For example, instead of showing raw debts: “A owes B $50, B owes C $30”, the user will see optimized transactions: A → C $20.
-
+As Stacie, who shares bills and groceries with her roommates, I want the system to calculate and summarize who owes who within our group so that everyone can see the final amounts. I want a summary that makes splitting costs and paying each other back quick and easy to access.
 Acceptance Criteria:
 - The system calculates debts automatically whenever a new group expense is added, edited, or deleted.
 - The summary displays clear, human-readable results (e.g., “A owes C $20”).
