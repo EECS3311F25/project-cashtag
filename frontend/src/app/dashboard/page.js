@@ -9,24 +9,11 @@ import EditBudgetModal from "./EditBudgetModal";
 import BarChartComponent from "./BarChartComponent";
 import { BudgetBar } from "./BudgetBar";
 import SummaryComponents from "./SummaryComponents";
+import TotalAndCategory from "./TotalAndCategory";
+import { getCurrentMonthRange, monthStringToRange, fmtCurrency } from "./MonthSelector";
 
 
 const API = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080"; 
-
-
-// current month helper
-function getCurrentMonthRange() {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), now.getMonth(), 1);
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  const toISO = (d) => d.toISOString().slice(0, 10);
-  return { start: toISO(start), end: toISO(end) };
-}
-
-// format money helper
-function fmtCurrency(n) {
-  return `$${Number(n || 0).toFixed(2)}`;
-}
 
 
 export default function Dashboard() {
@@ -38,6 +25,9 @@ export default function Dashboard() {
  const [isEBudgetModalOpen, setIsBudgetModalOpen] = useState(false);
 
  const [selectedExpense, setSelectedExpense] = useState(null);
+ // user select month like nov
+const [selectedMonth, setSelectedMonth] = useState("");
+
 
  const [budgets, setBudgets] = useState(null); // store fetched data
  const [selectedBudget, setSelectedBudget] = useState(null);
@@ -48,11 +38,20 @@ const [{ start, end }] = useState(getCurrentMonthRange());
 //  current month list + summary
 const [monthExpenses, setMonthExpenses] = useState([]);
 
-// label: "November 2025"
-const monthLabel = useMemo(() => {
-  const d = new Date(start + "T00:00:00");
+//  which range to show as selected month or current month
+const { viewStart, viewEnd } = useMemo(() => {
+  if (selectedMonth) {
+    const { start: s, end: e } = monthStringToRange(selectedMonth);
+    return { viewStart: s, viewEnd: e };
+  }
+  return { viewStart: start, viewEnd: end };
+}, [selectedMonth, start, end]);
+
+const viewLabel = useMemo(() => {
+  const d = new Date(viewStart + "T00:00:00");
   return d.toLocaleDateString(undefined, { month: "long", year: "numeric" });
-}, [start]);
+}, [viewStart]);
+
 
 
  useEffect(() => {
@@ -91,10 +90,10 @@ const monthLabel = useMemo(() => {
   if (!Array.isArray(expenses)) return;
   const inRange = (isoDate) => {
     const x = new Date(isoDate);
-    return x >= new Date(start) && x <= new Date(end);
+   return x >= new Date(viewStart) && x <= new Date(viewEnd);
   };
   setMonthExpenses(expenses.filter((e) => e && e.date && inRange(e.date)));
-}, [expenses, start, end]);
+}, [expenses, viewStart, viewEnd]);
 
 
  const handleDeleteClick = async (expenseId) => {
@@ -142,13 +141,34 @@ const monthLabel = useMemo(() => {
        </div>
      </div>
 
+{/* Month picker */}
+<div className="flex items-center gap-3 mb-4">
+  <label className="text-sm text-gray-600">Choose month:</label>
+  <input
+  type="month"
+  value={selectedMonth || viewStart.slice(0, 7)}  // <-- "YYYY-MM"
+  onChange={(e) => setSelectedMonth(e.target.value)}
+  className="border rounded-md px-2 py-1"
+/>
+
+  <button
+    type="button"
+    onClick={() => setSelectedMonth("")}
+    className="text-sm text-pink-600 hover:underline"
+    title="Reset to current month"
+  >
+    This month
+  </button>
+</div>
+
+
      {/* Showing which month is default */}
 <p className="text-gray-600 mb-4">
-  Showing <span className="font-medium">{monthLabel}</span> by default
+  Showing <span className="font-medium">{viewLabel}</span>
 </p>
 
-  <SummaryComponents expenses={expenses} start={start} end={end} monthLabel={monthLabel} />
-
+   {/* Total Spending + category */}
+  <TotalAndCategory expenses={expenses} start={viewStart} end={viewEnd} monthLabel={viewLabel} />
 
      {/* bar chart */}
      {userId && <BarChartComponent userId={userId} refreshKey={refresh} />}
@@ -159,12 +179,12 @@ const monthLabel = useMemo(() => {
 <div className="bg-white rounded-2xl shadow-md p-6 max-w-4xl mx-auto mb-8">
   <div className="flex items-center justify-between mb-4">
     <h2 className="text-xl font-semibold text-gray-800">
-      Expenses in {monthLabel}
+      Expenses in {viewLabel}
     </h2>
   </div>
 
   {monthExpenses.length === 0 ? (
-    <p className="text-gray-500">No expenses found for {monthLabel}.</p>
+    <p className="text-gray-500">No expenses found for {viewLabel}.</p>
   ) : (
     <table className="w-full border-collapse text-left">
       <thead>
