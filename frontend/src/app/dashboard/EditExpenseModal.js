@@ -53,7 +53,7 @@ export default function EditExpenseModal({ isOpen, onClose, expense, onExpenseUp
   if (!isOpen || !expense) return null;
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-40">
+    <div className="fixed inset-0 flex justify-center items-center bg-opacity-40">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
         <h2 className="text-xl font-bold mb-4">Edit Expense</h2>
 
@@ -101,7 +101,7 @@ export default function EditExpenseModal({ isOpen, onClose, expense, onExpenseUp
             </button>
             <button
               type="submit"
-              className="bg-blue-700 text-white-200 px-4 py-2 rounded hover:bg-blue-600"
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
               Update
             </button>
