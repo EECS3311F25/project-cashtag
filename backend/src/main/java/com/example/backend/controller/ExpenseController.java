@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -14,10 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;          // keep POST /api/expense
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;          // keep POST /api/expense
+import org.springframework.web.bind.annotation.PathVariable;          // keep POST /api/expense
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;          // keep POST /api/expense
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,9 +26,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.backend.model.Category;
 import com.example.backend.model.Expense;
+import com.example.backend.repository.BudgetRepository;
 import com.example.backend.repository.ExpenseRepository;
-import java.util.Optional; 
-
 
 @CrossOrigin(origins = { "http://localhost:3000" })
 @RestController
@@ -36,10 +36,12 @@ import java.util.Optional;
 public class ExpenseController {
 
     private final ExpenseRepository expenseRepository;
+    private final BudgetRepository budgetRepository;
 
 
-    public ExpenseController(ExpenseRepository expenseRepository) {
+    public ExpenseController(ExpenseRepository expenseRepository, BudgetRepository budgetRepository) {
         this.expenseRepository = expenseRepository;
+        this.budgetRepository = budgetRepository;
     }
 
     //This endpoint is paginated since it is meant for UI views where you don’t want to load all expenses at once.
@@ -85,6 +87,19 @@ public class ExpenseController {
         if (userId == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "userId missing in request");
         }
+        if(expense.getCategory() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "category missing in request");
+        }
+        
+        budgetRepository.findByUserIdAndMonthAndCategory(
+            userId,
+            String.format("%d-%02d", expense.getDate().getYear(), expense.getDate().getMonthValue()), //format month into YYYY-MM FORMAT
+            expense.getCategory())
+            .stream().findFirst().ifPresent(budget -> { // if a budget exists for the category, update amount spent.
+                budget.setCurrentAmount(budget.getCurrentAmount() + expense.getAmount());
+                budgetRepository.save(budget);
+            });
+
         return expenseRepository.save(expense);
     }
 
@@ -97,21 +112,59 @@ public class ExpenseController {
         }
 
         Expense expense = existing.get();
+        double oldAmount = expense.getAmount();
+        Category oldCategory = expense.getCategory();
+        String month = String.format("%d-%02d", expense.getDate().getYear(), expense.getDate().getMonthValue());
+
+         // Update fields
         expense.setDescription(updatedExpense.getDescription());
         expense.setAmount(updatedExpense.getAmount());
         expense.setCategory(updatedExpense.getCategory());
         expense.setDate(updatedExpense.getDate()); // optional: update date if needed
-        
 
+        if (oldCategory.equals(expense.getCategory())) {
+            // Same category → adjust the budget by the difference
+            budgetRepository.findByUserIdAndMonthAndCategory(expense.getUserId(), month, expense.getCategory())
+                .stream().findFirst().ifPresent(budget -> {
+                    budget.setCurrentAmount(budget.getCurrentAmount() + expense.getAmount() - oldAmount);
+                    budgetRepository.save(budget);
+                });
+        } else {
+            // Category changed → deduct from old budget, and add to new budget
+            budgetRepository.findByUserIdAndMonthAndCategory(expense.getUserId(), month, oldCategory)
+                .stream().findFirst().ifPresent(budget -> {
+                    budget.setCurrentAmount(budget.getCurrentAmount() - oldAmount);
+                    budgetRepository.save(budget);
+                });
+    
+            budgetRepository.findByUserIdAndMonthAndCategory(expense.getUserId(), month, expense.getCategory())
+                .stream().findFirst().ifPresent(budget -> {
+                    budget.setCurrentAmount(budget.getCurrentAmount() + expense.getAmount());
+                    budgetRepository.save(budget);
+                });
+        }
+    
         Expense saved = expenseRepository.save(expense);
         return ResponseEntity.ok(saved);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteExpense(@PathVariable Long id) {
         Optional<Expense> existing = expenseRepository.findById(id);
         if (existing.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
+        Expense expense = existing.get();
+        // format month into YYYY-MM FORMAT
+        String month = String.format("%d-%02d", expense.getDate().getYear(), expense.getDate().getMonthValue());
+        
+        // if a budget exists for the category, update it by deleting the expense amount.
+        budgetRepository.findByUserIdAndMonthAndCategory(expense.getUserId(), month, expense.getCategory())
+            .stream().findFirst().ifPresent(budget -> { 
+                budget.setCurrentAmount(budget.getCurrentAmount() - expense.getAmount());
+                budgetRepository.save(budget);
+            });
+
         expenseRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
