@@ -5,7 +5,8 @@ COMPLETED TASKS
 **1. Add Recurring Monthly Expenses**
 
 As Stacie, who manages shared apartment expenses with her roomates, I want to set up recurring monthly expenses such as rent, wifi or subscriptions so that I do not have to manually add them every month. This helps me stay organized and avoid confusion about which bills are paid or still pending.
-Acceptance Criteria
+
+Acceptance Criteria:
 - The user can mark any expense as recurring monthly
 - The recurring expenses automatically appear in future months.
 
@@ -13,7 +14,7 @@ Acceptance Criteria
 
 As Jordan, who wants a quick overview of his spending, I want my dashboard to show the current month’s expenses and budgets by default so I can see how I am doing without filtering or searching manually.
 
-Acceptance Criteria
+Acceptance Criteria:
 - When opening the app, the dashboard automatically shows data for the current month.
 - The user can view total spending, spending by category, and remaining budget.
 - The dashboard updates automatically when new expenses are added, edited, or deleted.
@@ -90,6 +91,7 @@ Acceptance Criteria:
 **2. Badges and Achievements**
 
 As Sarah Ren (a tech-savvy traveller who likes achievements to be motivated to budget), I want to view my profile and see all the badges and achievements that I’ve earned, so that I can stay motivated and feel rewarded for keeping up with my budgeting goals.
+
 Acceptance Criteria:
 - The profile page should display a list of badges (e.g., “3-Day Streak”, “Stayed Under Monthly Dining Budget”).
 - Each badge should have a visual icon and/or title.
@@ -117,7 +119,7 @@ Acceptance Criteria:
 
 As a user, I want to view my profile to see my personal information and account details, so that I can  manage my account.
 
-Criteria Of Satisfaction:
+Acceptance Criteria:
 - Displays name, username, email, account creation date, and profile picture/avatar.
 - Includes “Edit” and “Delete Account” options.
 - Profile button on navigation bar.
