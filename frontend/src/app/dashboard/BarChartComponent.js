@@ -38,7 +38,8 @@ export default function BarChartComponent({ userId, refreshKey }) {
 
 
        rows.forEach((expense) => {
-         const date = new Date(expense.date); // Convert "YYYY-MM-DD" string to Date
+         const date = new Date(`${expense.date}T00:00:00`);
+
          if (isNaN(date)) return;
 
 
@@ -108,9 +109,9 @@ export default function BarChartComponent({ userId, refreshKey }) {
 
 
  return (
-   <section className="p-6">
-     <h2 className="text-2xl font-semibold mb-4">Total Expenses Per Month</h2>
-     <div className="h-96">
+   <section className="bg-white rounded-2xl shadow-md p-6 mb-6 mt-6">
+     <h2 className="text-xl font-semibold mb-3">Total Expenses Per Month</h2>
+     <div className="h-80">
        <Bar data={chartData} options={options} />
      </div>
    </section>
