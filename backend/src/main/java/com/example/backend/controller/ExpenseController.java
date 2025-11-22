@@ -25,11 +25,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.backend.model.BadgeEventType;
 import com.example.backend.model.Category;
 import com.example.backend.model.Expense;
 import com.example.backend.repository.BudgetRepository;
 import com.example.backend.repository.ExpenseRepository;
-
+import com.example.backend.service.BadgeService;
 
 @CrossOrigin(origins = { "http://localhost:3000" })
 @RestController
@@ -39,11 +40,13 @@ public class ExpenseController {
 
     private final ExpenseRepository expenseRepository;
     private final BudgetRepository budgetRepository;
+    private final BadgeService badgeService;
 
 
-    public ExpenseController(ExpenseRepository expenseRepository, BudgetRepository budgetRepository) {
+    public ExpenseController(ExpenseRepository expenseRepository, BudgetRepository budgetRepository, BadgeService badgeService) {
         this.expenseRepository = expenseRepository;
         this.budgetRepository = budgetRepository;
+        this.badgeService = badgeService;
     }
 
     //This endpoint is paginated since it is meant for UI views where you don’t want to load all expenses at once.
@@ -125,8 +128,34 @@ public class ExpenseController {
                 expenseRepository.save(expenseCopy); // add the expense to repository for each month
             }
         }
-        return savedExpense;
 
+        //  Check and award badge for adding first expense
+        badgeService.checkAndAwardBadge(
+            userId,
+            BadgeEventType.ADD_EXPENSE,
+            expenseRepository.countByUserId(userId)
+        );
+
+        // Check if all budgets are still under their limits after adding this expense
+        List<Expense> expenses = expenseRepository.findByUserIdAndCategoryAndMonth(
+            userId,
+            expense.getCategory(),
+            String.format("%d-%02d", expense.getDate().getYear(), expense.getDate().getMonthValue())
+        );
+        // Calculate total expenses for that category and month
+        double expensesTotal = expenses.stream()
+        .mapToDouble(Expense::getAmount)
+        .sum();
+
+        badgeService.checkAndRemoveUnderAllBudgetsBadge(
+            userId,
+            expense.getCategory(),
+            String.format("%d-%02d", expense.getDate().getYear(), expense.getDate().getMonthValue()),
+            expensesTotal
+        );
+
+  
+        return savedExpense;
     }
 
     //this is for editing an expense
@@ -169,7 +198,6 @@ public class ExpenseController {
                     budgetRepository.save(budget);
                 });
         }
-    
         Expense saved = expenseRepository.save(expense);
         return ResponseEntity.ok(saved);
     }
