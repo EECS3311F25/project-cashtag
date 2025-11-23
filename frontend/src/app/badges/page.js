@@ -8,7 +8,7 @@ export default function UserBadges() {
   const [earnedBadges, setEarnedBadges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-const [currentStreak, setCurrentStreak] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
 
   useEffect(() => {
     // fetch earned badges for the user
