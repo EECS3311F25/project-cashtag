@@ -161,6 +161,8 @@ public class ExpenseController {
     //this is for editing an expense
     @PutMapping("/{id}")
     public ResponseEntity<Expense> updateExpense(@PathVariable Long id, @RequestBody Expense updatedExpense) {
+        UUID userId = updatedExpense.getUserId();
+
         Optional<Expense> existing = expenseRepository.findById(id); // use expenseRepository
         if (existing.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -199,6 +201,26 @@ public class ExpenseController {
                 });
         }
         Expense saved = expenseRepository.save(expense);
+
+        // Check if all budgets are still under their limits after adding this expense
+        List<Expense> expenses = expenseRepository.findByUserIdAndCategoryAndMonth(
+            userId,
+            expense.getCategory(),
+            String.format("%d-%02d", expense.getDate().getYear(), expense.getDate().getMonthValue())
+        );
+
+        // Calculate total expenses for that category and month
+        double expensesTotal = expenses.stream()
+        .mapToDouble(Expense::getAmount)
+        .sum();
+
+        badgeService.checkAndRemoveUnderAllBudgetsBadge(
+            userId,
+            expense.getCategory(),
+            String.format("%d-%02d", expense.getDate().getYear(), expense.getDate().getMonthValue()),
+            expensesTotal
+        );
+
         return ResponseEntity.ok(saved);
     }
 

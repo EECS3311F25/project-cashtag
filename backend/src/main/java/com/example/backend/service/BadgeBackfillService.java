@@ -26,11 +26,9 @@ public class BadgeBackfillService {
     
 
     @Autowired private BadgeRepository badgeRepository;
-    @Autowired private EarnedBadgeRepository earnedBadgeRepository;
     @Autowired private ExpenseRepository expenseRepository;
     @Autowired private BudgetRepository budgetRepository;
     @Autowired private UserRepository userRepository;
-    @Autowired private GroupRepository groupRepository;
     @Autowired private BadgeService badgeService;
 
 

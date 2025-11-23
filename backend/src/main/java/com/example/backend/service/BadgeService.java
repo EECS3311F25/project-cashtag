@@ -13,6 +13,7 @@ import com.example.backend.model.User;
 import com.example.backend.repository.BadgeRepository;
 import com.example.backend.repository.EarnedBadgeRepository;
 import com.example.backend.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import com.example.backend.repository.BudgetRepository;
 
 @Service
@@ -58,6 +59,7 @@ public class BadgeService {
     }
 
     // Remove the UNDER_ALL_BUDGETS badge if user no longer qualifies or has exceeded a monthly budget.
+    @Transactional
     public void checkAndRemoveUnderAllBudgetsBadge(UUID userId, Category category, String month, double expensesTotal) {
         // Load user 
         if (userId == null) {
