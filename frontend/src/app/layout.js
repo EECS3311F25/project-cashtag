@@ -12,8 +12,10 @@ export default function RootLayout({ children }) {
           <Link href="/login">Login</Link>
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/transactions">Transactions</Link>
-          <Link href="/groups">Groups</Link> {/*added Groups link */}
+          <Link href="/groups">Groups</Link>
+          <Link href="/reports">Reports</Link>
         </nav>
+
         {children}
       </body>
     </html>
