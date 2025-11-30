@@ -32,6 +32,17 @@ import com.example.backend.repository.BudgetRepository;
 import com.example.backend.repository.ExpenseRepository;
 import com.example.backend.service.BadgeService;
 
+//new
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.example.backend.dto.HighestTransaction;
+import com.example.backend.dto.MonthlySpendingReport;
+import com.example.backend.model.Category;
+import com.example.backend.model.Expense;
+
+
 @CrossOrigin(origins = { "http://localhost:3000" })
 @RestController
 @RequestMapping("/api/expense")
@@ -244,6 +255,155 @@ public class ExpenseController {
         expenseRepository.deleteById(id);
         return ResponseEntity.ok().build();
     }
+
+    //monthly spending report
+    @GetMapping("/user/{userId}/monthly-report")
+    public MonthlySpendingReport getMonthlyReport(
+            @PathVariable UUID userId,
+            @RequestParam String month
+    ) {
+
+        if (month == null || month.length() != 7 || month.charAt(4) != '-') {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid month format. Expected YYYY-MM");
+        }
+
+        LocalDate startDate;
+        try {
+            startDate = LocalDate.parse(month + "-01");
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid month value. Expected YYYY-MM");
+        }
+
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        // previous month
+        LocalDate prevStart = startDate.minusMonths(1).withDayOfMonth(1);
+        LocalDate prevEnd = prevStart.withDayOfMonth(prevStart.lengthOfMonth());
+
+        Sort sortByDate = Sort.by(Sort.Direction.ASC, "date");
+
+        // this month expenses
+        List<Expense> thisMonth = expenseRepository.findByUserIdAndDateBetween(
+                userId, startDate, endDate, sortByDate
+        );
+
+        // ---- HIGHEST SINGLE EXPENSE ----
+        Expense highestExpense = null;
+
+        if (!thisMonth.isEmpty()) {
+    highestExpense = thisMonth.stream()
+            .max((a, b) -> Double.compare(a.getAmount(), b.getAmount()))
+            .orElse(null);
+}
+
+
+        // last month expenses
+        List<Expense> lastMonth = expenseRepository.findByUserIdAndDateBetween(
+                userId, prevStart, prevEnd, sortByDate
+        );
+
+        // Calculate totals + categories
+
+        double totalThisMonth = 0.0;
+        Map<String, Double> byCategory = new HashMap<>();
+
+        for (Expense e : thisMonth) {
+            if (e == null) continue;
+
+            double amt = e.getAmount();
+            totalThisMonth += amt;
+
+            String cat = (e.getCategory() != null)
+                    ? e.getCategory().name()
+                    : "UNCATEGORIZED";
+
+            byCategory.merge(cat, amt, Double::sum);
+        }
+
+        // find biggest category
+        String biggestCat = null;
+        double biggestAmount = 0.0;
+        for (Map.Entry<String, Double> entry : byCategory.entrySet()) {
+            if (entry.getValue() > biggestAmount) {
+                biggestAmount = entry.getValue();
+                biggestCat = entry.getKey();
+            }
+        }
+
+        // last month totals
+        double totalLastMonth = 0.0;
+        for (Expense e : lastMonth) {
+            if (e != null) {
+                totalLastMonth += e.getAmount();
+            }
+        }
+
+        // percent change
+        Double percentChange = null;
+        if (totalLastMonth > 0) {
+            percentChange = ((totalThisMonth - totalLastMonth) / totalLastMonth) * 100.0;
+        }
+
+
+        MonthlySpendingReport report = new MonthlySpendingReport();
+
+        report.setMonth(month);
+        report.setStartDate(startDate);
+        report.setEndDate(endDate);
+
+        report.setTotalSpending(totalThisMonth);
+        report.setTransactionCount(thisMonth.size());
+
+        report.setSpendingByCategory(byCategory);
+        report.setBiggestExpenseCategory(biggestCat);
+        report.setBiggestExpenseAmount(biggestAmount);
+
+        report.setLastMonthTotalSpending(totalLastMonth);
+        report.setLastMonthTransactionCount(lastMonth.size());
+        report.setPercentChangeFromLastMonth(percentChange);
+
+        // Add highest single transaction if found
+    if (highestExpense != null) {
+        // Build DTO object
+        HighestTransaction highestDto = new HighestTransaction();
+        highestDto.setAmount(highestExpense.getAmount());
+        highestDto.setCategory(highestExpense.getCategory().name());
+        highestDto.setDescription(highestExpense.getDescription());
+        highestDto.setDate(highestExpense.getDate());
+
+        // attach to report
+        report.setHighestTransaction(highestDto);
+
+}
+
+
+        return report;
+    }
+
+
+    //NEW!!!
+    @GetMapping("/user/{userId}/trend")
+public Map<String, Double> get6MonthTrend(@PathVariable UUID userId) {
+    LocalDate now = LocalDate.now();
+
+    Map<String, Double> result = new LinkedHashMap<>();
+
+    for (int i = 5; i >= 0; i--) {
+        LocalDate monthDate = now.minusMonths(i);
+        String ym = String.format("%d-%02d", monthDate.getYear(), monthDate.getMonthValue());
+
+        List<Expense> monthly = expenseRepository.findByUserIdAndDateBetween(
+            userId,
+            monthDate.withDayOfMonth(1),
+            monthDate.withDayOfMonth(monthDate.lengthOfMonth()),
+            Sort.by("date")
+        );
+
+        double total = monthly.stream().mapToDouble(Expense::getAmount).sum();
+        result.put(ym, total);
+    }
+    return result;
+}
 
 
     // helper function to parse category from string
