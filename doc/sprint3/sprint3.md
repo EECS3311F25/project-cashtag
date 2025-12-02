@@ -1,7 +1,7 @@
 # **Sprint 2**
 
 Sprint Goal:  
-Our goal is to add the group feature as well as budget functionality to CashTag by focusing on implementing group expense management, budget tracking, and improving data visualization.
+Our goal is to add the badges, end of month report as well as dynamic handling for monthly group expenses.
 
 Participants Participants: Priya Gill, Eesha Fawad, Abrar Kassim, Ashal Iman, Melanie-Jane Mushayev
 
