@@ -1,4 +1,4 @@
-**Sprint 1 Retrospective – SR1.md**
+**Sprint 2 Retrospective – SR2.md**
 
 **Participants**
 
