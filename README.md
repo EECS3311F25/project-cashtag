@@ -6,6 +6,11 @@ Most apps only help with personal budgets or just with splitting bills but not b
 
 The goal is to make money management clear and fair. With simple charts and goals, the tracker will help people stay organized and avoid money problems with friends.
 
+## Sprint Videos 
+- Sprint 1: https://youtu.be/FGvWRi3tYMQ
+- Sprint 2: https://youtu.be/o_TVxV01_0o
+- Sprint 3: https://youtu.be/hZsUUX6z-Pk 
+
 ## Installation
 
 ### Prerequisites:
